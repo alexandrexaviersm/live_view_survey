@@ -16,6 +16,7 @@ defmodule LiveViewSurveyWeb.ChannelCase do
   """
 
   use ExUnit.CaseTemplate
+  alias Ecto.Adapters.SQL.Sandbox
 
   using do
     quote do
@@ -29,10 +30,10 @@ defmodule LiveViewSurveyWeb.ChannelCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(LiveViewSurvey.Repo)
+    :ok = Sandbox.checkout(LiveViewSurvey.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(LiveViewSurvey.Repo, {:shared, self()})
+      Sandbox.mode(LiveViewSurvey.Repo, {:shared, self()})
     end
 
     :ok

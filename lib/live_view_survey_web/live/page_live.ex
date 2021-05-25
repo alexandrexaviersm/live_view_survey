@@ -1,4 +1,5 @@
 defmodule LiveViewSurveyWeb.PageLive do
+  @moduledoc false
   use LiveViewSurveyWeb, :live_view
 
   @impl true
