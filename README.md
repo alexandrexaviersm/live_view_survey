@@ -1,4 +1,5 @@
 # LiveViewSurvey
+![actions](https://github.com/alexandrexaviersm/live_view_survey/workflows/actions/badge.svg)
 
 To start your Phoenix server:
 
