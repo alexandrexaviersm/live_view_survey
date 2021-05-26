@@ -7,10 +7,12 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "chart.js": "^2.9.4",
+    "leaflet": "^1.7.1",
+    "nprogress": "^0.2.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
-    "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "topbar": "^0.1.4"
+    "phoenix_live_view": "file:../deps/phoenix_live_view"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -24,7 +26,9 @@
     "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss": "^8.3.0",
+    "postcss-import": "^14.0.2",
     "postcss-loader": "^4.2.0",
+    "postcss-nested": "^5.0.5",
     "sass-loader": "^8.0.2",
     "tailwindcss": "^2.1.2",
     "terser-webpack-plugin": "^2.3.2",
