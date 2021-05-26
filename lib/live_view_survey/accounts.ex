@@ -4,8 +4,8 @@ defmodule LiveViewSurvey.Accounts do
   """
 
   import Ecto.Query, warn: false
+  alias LiveViewSurvey.Accounts.{User, UserNotifier, UserToken}
   alias LiveViewSurvey.Repo
-  alias LiveViewSurvey.Accounts.{User, UserToken, UserNotifier}
 
   ## Database getters
 

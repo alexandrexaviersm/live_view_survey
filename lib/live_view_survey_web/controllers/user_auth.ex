@@ -1,4 +1,5 @@
 defmodule LiveViewSurveyWeb.UserAuth do
+  @moduledoc false
   import Plug.Conn
   import Phoenix.Controller
 
