@@ -17,12 +17,6 @@ defmodule LiveViewSurveyWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", LiveViewSurveyWeb do
-    pipe_through :browser
-
-    live "/", PageLive, :index
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", LiveViewSurveyWeb do
   #   pipe_through :api
@@ -61,6 +55,9 @@ defmodule LiveViewSurveyWeb.Router do
 
   scope "/", LiveViewSurveyWeb do
     pipe_through [:browser, :require_authenticated_user]
+
+    live "/", PageLive, :index
+    # live "/surveys", SurveysLive
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
