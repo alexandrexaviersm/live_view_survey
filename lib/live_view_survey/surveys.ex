@@ -9,16 +9,18 @@ defmodule LiveViewSurvey.Surveys do
   alias LiveViewSurvey.Surveys.Survey
 
   @doc """
-  Returns the list of surveys.
+  Returns the list of surveys of the user.
 
   ## Examples
 
-      iex> list_surveys()
+      iex> list_surveys(user_id)
       [%Survey{}, ...]
 
   """
-  def list_surveys do
-    Repo.all(Survey)
+  def list_surveys(user_id) do
+    query = from s in Survey, where: s.created_by == ^user_id
+
+    Repo.all(query)
   end
 
   @doc """

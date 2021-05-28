@@ -19,7 +19,7 @@ defmodule LiveViewSurvey.DataCase do
 
   using do
     quote do
-      alias LiveViewSurvey.Repo
+      alias LiveViewSurvey.{Factories, Repo}
 
       import Ecto
       import Ecto.Changeset

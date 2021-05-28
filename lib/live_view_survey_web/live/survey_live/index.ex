@@ -8,7 +8,7 @@ defmodule LiveViewSurveyWeb.SurveyLive.Index do
   def mount(_params, session, socket) do
     socket = assign_current_user(socket, session)
 
-    {:ok, assign(socket, :surveys, list_surveys())}
+    {:ok, assign(socket, :surveys, list_surveys(socket.assigns.current_user.id))}
   end
 
   @impl true
@@ -39,10 +39,10 @@ defmodule LiveViewSurveyWeb.SurveyLive.Index do
     survey = Surveys.get_survey!(id)
     {:ok, _} = Surveys.delete_survey(survey)
 
-    {:noreply, assign(socket, :surveys, list_surveys())}
+    {:noreply, assign(socket, :surveys, list_surveys(socket.assigns.current_user.id))}
   end
 
-  defp list_surveys do
-    Surveys.list_surveys()
+  defp list_surveys(user_id) do
+    Surveys.list_surveys(user_id)
   end
 end
