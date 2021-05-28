@@ -5,7 +5,9 @@ defmodule LiveViewSurveyWeb.SurveyLive.Index do
   alias LiveViewSurvey.Surveys.Survey
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
+    socket = assign_current_user(socket, session)
+
     {:ok, assign(socket, :surveys, list_surveys())}
   end
 

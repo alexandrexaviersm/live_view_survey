@@ -3,6 +3,8 @@ defmodule LiveViewSurvey.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias LiveViewSurvey.Surveys.Survey
+
   @derive {Inspect, except: [:password]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -11,6 +13,8 @@ defmodule LiveViewSurvey.Accounts.User do
     field :password, :string, virtual: true
     field :hashed_password, :string
     field :confirmed_at, :naive_datetime
+
+    has_many :surveys, Survey, foreign_key: :created_by
 
     timestamps()
   end

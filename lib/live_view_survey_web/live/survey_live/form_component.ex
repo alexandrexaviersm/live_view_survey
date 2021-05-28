@@ -41,7 +41,10 @@ defmodule LiveViewSurveyWeb.SurveyLive.FormComponent do
   end
 
   defp save_survey(socket, :new, survey_params) do
-    case Surveys.create_survey(survey_params) do
+    survey_params
+    |> Map.put("current_user", socket.assigns.current_user)
+    |> Surveys.create_survey()
+    |> case do
       {:ok, _survey} ->
         {:noreply,
          socket

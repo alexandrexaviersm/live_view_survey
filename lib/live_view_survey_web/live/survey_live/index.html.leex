@@ -3,6 +3,7 @@
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, LiveViewSurveyWeb.SurveyLive.FormComponent,
     id: @survey.id || :new,
+    current_user: @current_user,
     title: @page_title,
     action: @live_action,
     survey: @survey,
