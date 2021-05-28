@@ -1,0 +1,22 @@
+<h1>Show Survey</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, LiveViewSurveyWeb.SurveyLive.FormComponent,
+    id: @survey.id,
+    title: @page_title,
+    action: @live_action,
+    survey: @survey,
+    return_to: Routes.survey_show_path(@socket, :show, @survey) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @survey.title %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.survey_show_path(@socket, :edit, @survey), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.survey_index_path(@socket, :index) %></span>
