@@ -2,7 +2,20 @@ defmodule LiveViewSurveyWeb.PageLive do
   @moduledoc false
   use LiveViewSurveyWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    {:ok, push_redirect(socket, to: "/surveys")}
+  def mount(_params, session, socket) do
+    socket = assign_current_user(socket, session)
+
+    case socket.assigns.current_user do
+      nil ->
+        {:ok, push_redirect(socket, to: "/users/log_in")}
+
+      _ ->
+        {:ok, push_redirect(socket, to: "/surveys")}
+    end
   end
+
+  def render(assigns),
+    do: ~L"""
+
+    """
 end

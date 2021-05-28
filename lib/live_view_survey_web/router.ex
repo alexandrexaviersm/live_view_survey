@@ -56,8 +56,6 @@ defmodule LiveViewSurveyWeb.Router do
   scope "/", LiveViewSurveyWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live "/", PageLive, :index
-
     live "/surveys", SurveyLive.Index, :index
     live "/surveys/new", SurveyLive.Index, :new
     live "/surveys/:id/edit", SurveyLive.Index, :edit
@@ -72,6 +70,8 @@ defmodule LiveViewSurveyWeb.Router do
 
   scope "/", LiveViewSurveyWeb do
     pipe_through [:browser]
+
+    live "/", PageLive, :index
 
     delete "/users/log_out", UserSessionController, :delete
     get "/users/confirm", UserConfirmationController, :new

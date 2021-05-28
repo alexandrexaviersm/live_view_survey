@@ -16,16 +16,16 @@ defmodule LiveViewSurvey.Surveys.Survey do
   end
 
   @doc false
-  def changeset(survey, %{} = attrs) do
+  def changeset(survey, %{"current_user" => current_user} = attrs) do
     survey
     |> cast(attrs, [:title])
     |> validate_required([:title])
+    |> put_assoc(:user, current_user)
   end
 
   def changeset(survey, attrs) do
     survey
     |> cast(attrs, [:title])
     |> validate_required([:title])
-    |> put_assoc(:user, attrs["current_user"])
   end
 end
