@@ -1,4 +1,4 @@
-defmodule LiveViewSurveyWeb.PageLive do
+defmodule LiveViewSurveyWeb.HomeLive do
   @moduledoc false
   use LiveViewSurveyWeb, :live_view
 

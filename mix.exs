@@ -48,6 +48,7 @@ defmodule LiveViewSurvey.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      {:slugify, "~> 1.3"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:phx_gen_auth, "~> 0.7", only: [:dev], runtime: false}
     ]

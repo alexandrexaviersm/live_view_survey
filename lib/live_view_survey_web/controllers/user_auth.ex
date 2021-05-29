@@ -61,9 +61,12 @@ defmodule LiveViewSurveyWeb.UserAuth do
   #     end
   #
   defp renew_session(conn) do
+    voting_session_id = get_session(conn, :voting_session_id) || Ecto.UUID.generate()
+
     conn
     |> configure_session(renew: true)
     |> clear_session()
+    |> put_session(:voting_session_id, voting_session_id)
   end
 
   @doc """
@@ -93,6 +96,12 @@ defmodule LiveViewSurveyWeb.UserAuth do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Accounts.get_user_by_session_token(user_token)
     assign(conn, :current_user, user)
+  end
+
+  def fetch_or_create_voting_session(conn, _opts) do
+    voting_session_id = get_session(conn, :voting_session_id) || Ecto.UUID.generate()
+
+    put_session(conn, :voting_session_id, voting_session_id)
   end
 
   defp ensure_user_token(conn) do

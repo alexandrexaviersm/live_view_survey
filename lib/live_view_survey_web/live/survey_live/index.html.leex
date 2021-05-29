@@ -27,6 +27,7 @@
           <span><%= live_redirect "Show", to: Routes.survey_show_path(@socket, :show, survey) %></span>
           <span><%= live_patch "Edit", to: Routes.survey_index_path(@socket, :edit, survey) %></span>
           <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: survey.id, data: [confirm: "Are you sure?"] %></span>
+          <span><%= link "Responder", to: Routes.survey_answer_path(@socket, :show, survey.id, Slug.slugify(survey.title)), target: "_blank" %></span>
         </td>
       </tr>
     <% end %>

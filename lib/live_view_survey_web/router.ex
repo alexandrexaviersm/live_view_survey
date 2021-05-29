@@ -11,6 +11,7 @@ defmodule LiveViewSurveyWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug :fetch_or_create_voting_session
   end
 
   pipeline :api do
@@ -38,7 +39,11 @@ defmodule LiveViewSurveyWeb.Router do
     end
   end
 
-  ## Authentication routes
+  scope "/", LiveViewSurveyWeb do
+    pipe_through [:browser]
+
+    live "/", HomeLive, :index
+  end
 
   scope "/", LiveViewSurveyWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
@@ -68,14 +73,18 @@ defmodule LiveViewSurveyWeb.Router do
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
   end
 
-  scope "/", LiveViewSurveyWeb do
+  scope "/survey_answer", LiveViewSurveyWeb do
     pipe_through [:browser]
 
-    live "/", PageLive, :index
+    live "/:id/:slugified_title", SurveyAnswerLive, :show
+  end
 
-    delete "/users/log_out", UserSessionController, :delete
-    get "/users/confirm", UserConfirmationController, :new
-    post "/users/confirm", UserConfirmationController, :create
-    get "/users/confirm/:token", UserConfirmationController, :confirm
+  scope "/users", LiveViewSurveyWeb do
+    pipe_through [:browser]
+
+    delete "/log_out", UserSessionController, :delete
+    get "/confirm", UserConfirmationController, :new
+    post "/confirm", UserConfirmationController, :create
+    get "/confirm/:token", UserConfirmationController, :confirm
   end
 end
