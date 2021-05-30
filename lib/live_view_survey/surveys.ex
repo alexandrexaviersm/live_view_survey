@@ -53,7 +53,7 @@ defmodule LiveViewSurvey.Surveys do
   """
   def create_survey(attrs \\ %{}) do
     %Survey{}
-    |> Survey.changeset(attrs)
+    |> Survey.create_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -102,5 +102,9 @@ defmodule LiveViewSurvey.Surveys do
   """
   def change_survey(%Survey{} = survey, attrs \\ %{}) do
     Survey.changeset(survey, attrs)
+  end
+
+  def new_survey do
+    Survey.changeset(%Survey{}, %{options: [%{id: Ecto.UUID.generate(), option: "Option 01"}]})
   end
 end

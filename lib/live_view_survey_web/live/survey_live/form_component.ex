@@ -3,9 +3,8 @@ defmodule LiveViewSurveyWeb.SurveyLive.FormComponent do
 
   alias LiveViewSurvey.Surveys
 
-  @impl true
-  def update(%{survey: survey} = assigns, socket) do
-    changeset = Surveys.change_survey(survey)
+  def update(assigns, socket) do
+    changeset = Surveys.new_survey()
 
     {:ok,
      socket
@@ -13,7 +12,6 @@ defmodule LiveViewSurveyWeb.SurveyLive.FormComponent do
      |> assign(:changeset, changeset)}
   end
 
-  @impl true
   def handle_event("validate", %{"survey" => survey_params}, socket) do
     changeset =
       socket.assigns.survey
@@ -23,24 +21,28 @@ defmodule LiveViewSurveyWeb.SurveyLive.FormComponent do
     {:noreply, assign(socket, :changeset, changeset)}
   end
 
+  def handle_event("add-option", _, socket) do
+    new_option = %{id: Ecto.UUID.generate(), option: "New option"}
+
+    options = [new_option | socket.assigns.changeset.changes.options]
+
+    socket = update_socket_changeset(socket, options)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("remove-option", %{"id" => option_id}, socket) do
+    options =
+      Enum.reject(socket.assigns.changeset.changes.options, fn option ->
+        option.changes.id == option_id
+      end)
+
+    socket = update_socket_changeset(socket, options)
+
+    {:noreply, socket}
+  end
+
   def handle_event("save", %{"survey" => survey_params}, socket) do
-    save_survey(socket, socket.assigns.action, survey_params)
-  end
-
-  defp save_survey(socket, :edit, survey_params) do
-    case Surveys.update_survey(socket.assigns.survey, survey_params) do
-      {:ok, _survey} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Survey updated successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
-    end
-  end
-
-  defp save_survey(socket, :new, survey_params) do
     survey_params
     |> Map.put("current_user", socket.assigns.current_user)
     |> Surveys.create_survey()
@@ -54,5 +56,13 @@ defmodule LiveViewSurveyWeb.SurveyLive.FormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  defp update_socket_changeset(socket, options) do
+    assign(
+      socket,
+      :changeset,
+      Ecto.Changeset.put_embed(socket.assigns.changeset, :options, options)
+    )
   end
 end

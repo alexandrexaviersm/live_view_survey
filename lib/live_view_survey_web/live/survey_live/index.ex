@@ -16,9 +16,9 @@ defmodule LiveViewSurveyWeb.SurveyLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, :show, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Survey")
+    |> assign(:page_title, "Show Survey")
     |> assign(:survey, Surveys.get_survey!(id))
   end
 
