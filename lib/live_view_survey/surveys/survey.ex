@@ -40,10 +40,4 @@ defmodule LiveViewSurvey.Surveys.Survey do
     |> cast(attrs, [:id, :option])
     |> validate_required([:id, :option])
   end
-
-  def update_votes_changeset(survey_option, attrs) do
-    survey_option
-    |> cast(attrs, [:total_votes])
-    |> validate_required([:total_votes])
-  end
 end
