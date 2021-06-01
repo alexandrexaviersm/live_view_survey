@@ -1,4 +1,7 @@
 defmodule LiveViewSurvey.Surveys.Survey do
+  @moduledoc """
+  Schema for the Surveys
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

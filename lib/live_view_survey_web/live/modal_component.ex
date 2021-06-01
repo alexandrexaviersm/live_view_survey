@@ -1,4 +1,7 @@
 defmodule LiveViewSurveyWeb.ModalComponent do
+  @moduledoc """
+  LiveComponent that renders modals
+  """
   use LiveViewSurveyWeb, :live_component
 
   @impl true

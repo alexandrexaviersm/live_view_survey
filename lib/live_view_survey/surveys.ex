@@ -7,7 +7,7 @@ defmodule LiveViewSurvey.Surveys do
 
   alias Ecto.Multi
   alias LiveViewSurvey.Repo
-  alias LiveViewSurvey.Surveys.{Survey, SessionSurvey}
+  alias LiveViewSurvey.Surveys.{SessionSurvey, Survey}
 
   @type option_id :: String.t()
   @type session_id :: String.t()

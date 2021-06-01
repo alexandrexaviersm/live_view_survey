@@ -1,4 +1,7 @@
 defmodule LiveViewSurveyWeb.LiveHelpers do
+  @moduledoc """
+  Helpers for LiveViews modules
+  """
   alias LiveViewSurvey.Accounts
   import Phoenix.LiveView
   import Phoenix.LiveView.Helpers

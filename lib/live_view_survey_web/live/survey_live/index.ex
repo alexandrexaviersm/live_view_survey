@@ -1,4 +1,7 @@
 defmodule LiveViewSurveyWeb.SurveyLive.Index do
+  @moduledoc """
+  LiveView that renders the Survey screens - actions :index, :new and :show
+  """
   use LiveViewSurveyWeb, :live_view
 
   alias LiveViewSurvey.Surveys

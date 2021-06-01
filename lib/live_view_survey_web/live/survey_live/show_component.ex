@@ -1,4 +1,7 @@
 defmodule LiveViewSurveyWeb.SurveyLive.ShowComponent do
+  @moduledoc """
+  LiveComponent that renders :show action
+  """
   use LiveViewSurveyWeb, :live_component
 
   alias Ecto.Changeset

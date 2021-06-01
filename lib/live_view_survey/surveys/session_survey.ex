@@ -1,4 +1,7 @@
 defmodule LiveViewSurvey.Surveys.SessionSurvey do
+  @moduledoc """
+  Schema to associate the Session that voted with a Survey.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

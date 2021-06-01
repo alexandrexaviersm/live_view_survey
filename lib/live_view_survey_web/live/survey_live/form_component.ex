@@ -1,4 +1,7 @@
 defmodule LiveViewSurveyWeb.SurveyLive.FormComponent do
+  @moduledoc """
+  LiveComponent that renders :new action
+  """
   use LiveViewSurveyWeb, :live_component
 
   alias LiveViewSurvey.Surveys

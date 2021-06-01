@@ -1,5 +1,7 @@
 defmodule LiveViewSurveyWeb.SurveyAnswerLive do
-  @moduledoc false
+  @moduledoc """
+  LiveView that renders the Voting screen.
+  """
   use LiveViewSurveyWeb, :live_view
 
   alias LiveViewSurvey.Surveys

@@ -1,5 +1,7 @@
 defmodule LiveViewSurveyWeb.HomeLive do
-  @moduledoc false
+  @moduledoc """
+  LiveView for the HomePage
+  """
   use LiveViewSurveyWeb, :live_view
 
   def mount(_params, session, socket) do
