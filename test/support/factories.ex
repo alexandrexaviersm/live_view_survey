@@ -6,6 +6,7 @@ defmodule LiveViewSurvey.Factories do
   alias Ecto.UUID
   alias LiveViewSurvey.Accounts.{User, UserToken}
   alias LiveViewSurvey.Surveys.Survey
+  alias LiveViewSurvey.Surveys.SessionSurvey
 
   def survey(attrs \\ []) do
     attrs =
@@ -13,6 +14,19 @@ defmodule LiveViewSurvey.Factories do
       |> Keyword.merge(attrs)
 
     struct(Survey, attrs)
+  end
+
+  def option(attrs \\ %{}) do
+    %{id: UUID.generate(), option: "Survey Test 01", votes: 2}
+    |> Map.merge(attrs)
+  end
+
+  def session_survey(attrs \\ []) do
+    attrs =
+      [session_id: UUID.generate(), survey_id: UUID.generate()]
+      |> Keyword.merge(attrs)
+
+    struct(SessionSurvey, attrs)
   end
 
   def user(attrs \\ []) do

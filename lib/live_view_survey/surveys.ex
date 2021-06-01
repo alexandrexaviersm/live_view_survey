@@ -9,9 +9,11 @@ defmodule LiveViewSurvey.Surveys do
   alias LiveViewSurvey.Repo
   alias LiveViewSurvey.Surveys.{SessionSurvey, Survey}
 
-  @type option_id :: String.t()
-  @type session_id :: String.t()
-  @type survey_id :: String.t()
+  @type option_id :: Ecto.UUID.t()
+  @type session_id :: Ecto.UUID.t()
+  @type survey_id :: Ecto.UUID.t()
+  @type user_id :: Ecto.UUID.t()
+
   @type survey :: Survey.t()
   @type changeset :: Ecto.Changeset.t()
 
@@ -41,6 +43,7 @@ defmodule LiveViewSurvey.Surveys do
       [%Survey{}, ...]
 
   """
+  @spec list_surveys(user_id) :: [survey]
   def list_surveys(user_id) do
     query = from s in Survey, where: s.created_by == ^user_id, order_by: [{:desc, :inserted_at}]
 
@@ -68,6 +71,28 @@ defmodule LiveViewSurvey.Surveys do
   end
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for tracking survey changes.
+
+  ## Examples
+
+      iex> change_survey(survey)
+      %Ecto.Changeset{data: %Survey{}}
+
+  """
+  @spec change_survey(survey, map) :: changeset
+  def change_survey(%Survey{} = survey, attrs \\ %{}) do
+    Survey.changeset(survey, attrs)
+  end
+
+  @doc """
+  Initializes a new survey with a default option
+  """
+  @spec new_survey :: changeset
+  def new_survey do
+    Survey.changeset(%Survey{}, %{options: [%{id: Ecto.UUID.generate(), option: "Option 01"}]})
+  end
+
+  @doc """
   Computes the vote to a Survey and record the running session that voted.
   """
   @spec vote(survey_id, option_id, session_id) :: {:ok, survey} | {:error, :transaction_failed}
@@ -77,10 +102,6 @@ defmodule LiveViewSurvey.Surveys do
     |> Multi.update(:survey, updates_survey_option_vote_changes(survey_id, option_id))
     |> Repo.transaction()
     |> broadcast(:survey_updated)
-  end
-
-  def subscribe(topic) do
-    Phoenix.PubSub.subscribe(LiveViewSurvey.PubSub, topic)
   end
 
   @doc """
@@ -95,23 +116,8 @@ defmodule LiveViewSurvey.Surveys do
     end
   end
 
-  @spec new_survey :: changeset
-  def new_survey do
-    Survey.changeset(%Survey{}, %{options: [%{id: Ecto.UUID.generate(), option: "Option 01"}]})
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking survey changes.
-
-  ## Examples
-
-      iex> change_survey(survey)
-      %Ecto.Changeset{data: %Survey{}}
-
-  """
-  @spec change_survey(survey, map) :: changeset
-  def change_survey(%Survey{} = survey, attrs \\ %{}) do
-    Survey.changeset(survey, attrs)
+  def subscribe(topic) do
+    Phoenix.PubSub.subscribe(LiveViewSurvey.PubSub, topic)
   end
 
   defp create_session_survey(survey_id, session_id) do

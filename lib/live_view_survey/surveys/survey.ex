@@ -34,7 +34,7 @@ defmodule LiveViewSurvey.Surveys.Survey do
     survey
     |> cast(attrs, [:title])
     |> validate_required([:title])
-    |> cast_embed(:options, with: &options_changeset/2)
+    |> cast_embed(:options, with: &options_changeset/2, required: true)
     |> put_assoc(:user, attrs["current_user"])
   end
 
