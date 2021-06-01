@@ -11,6 +11,8 @@ defmodule LiveViewSurveyWeb.SurveyAnswerLive do
   def handle_params(%{"id" => id}, _, socket) do
     survey = Surveys.get_survey!(id)
 
+    if connected?(socket), do: Surveys.subscribe("survey:#{id}")
+
     session_already_voted? =
       Surveys.session_already_voted?(survey.id, socket.assigns.voting_session_id)
 
@@ -59,6 +61,17 @@ defmodule LiveViewSurveyWeb.SurveyAnswerLive do
   end
 
   def handle_event("save", _, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info({:survey_updated, survey}, socket) do
+    chart_data = %{
+      labels: Enum.map(survey.options, & &1.option),
+      values: Enum.map(survey.options, & &1.votes)
+    }
+
+    socket = push_event(socket, "update-votes", chart_data)
+
     {:noreply, socket}
   end
 end

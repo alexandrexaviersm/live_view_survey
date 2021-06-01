@@ -44,6 +44,13 @@ class BarChart {
       },
     });
   }
+
+  updateChart(labels, values) {
+    this.chart.data.labels = labels;
+    this.chart.data.datasets[0].data = values;
+
+    this.chart.update();
+  }
 }
 
 export default BarChart;

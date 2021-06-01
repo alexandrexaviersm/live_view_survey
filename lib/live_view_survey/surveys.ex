@@ -64,6 +64,7 @@ defmodule LiveViewSurvey.Surveys do
     %Survey{}
     |> Survey.create_changeset(attrs)
     |> Repo.insert()
+    |> broadcast(:survey_created)
   end
 
   @doc """
@@ -75,10 +76,11 @@ defmodule LiveViewSurvey.Surveys do
     |> Multi.insert(:session_survey, create_session_survey(survey_id, session_id))
     |> Multi.update(:survey, updates_survey_option_vote_changes(survey_id, option_id))
     |> Repo.transaction()
-    |> case do
-      {:ok, %{survey: survey}} -> {:ok, survey}
-      {:error, _failed_operation, _failed_value, _changes_so_far} -> {:error, :transaction_failed}
-    end
+    |> broadcast(:survey_updated)
+  end
+
+  def subscribe(topic) do
+    Phoenix.PubSub.subscribe(LiveViewSurvey.PubSub, topic)
   end
 
   @doc """
@@ -139,4 +141,29 @@ defmodule LiveViewSurvey.Surveys do
     |> Ecto.Changeset.change()
     |> Ecto.Changeset.put_embed(:options, ordered_options)
   end
+
+  defp broadcast({:ok, survey}, :survey_created) do
+    Phoenix.PubSub.broadcast(
+      LiveViewSurvey.PubSub,
+      "user:#{survey.created_by}",
+      :survey_created
+    )
+
+    {:ok, survey}
+  end
+
+  defp broadcast({:ok, %{survey: survey}}, :survey_updated) do
+    Phoenix.PubSub.broadcast(
+      LiveViewSurvey.PubSub,
+      "survey:#{survey.id}",
+      {:survey_updated, survey}
+    )
+
+    {:ok, survey}
+  end
+
+  defp broadcast({:error, _reason} = error, _event), do: error
+
+  defp broadcast({:error, _failed_operation, _failed_value, _changes_so_far}, _event),
+    do: {:error, :transaction_failed}
 end

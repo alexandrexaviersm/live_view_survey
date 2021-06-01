@@ -5,6 +5,8 @@ defmodule LiveViewSurveyWeb.SurveyLive.ShowComponent do
   alias LiveViewSurvey.Surveys
 
   def update(%{survey: survey} = assigns, socket) do
+    if connected?(socket), do: Surveys.subscribe("survey:#{survey.id}")
+
     changeset = survey_options_ordered_changeset(survey)
 
     {:ok,
@@ -32,10 +34,12 @@ defmodule LiveViewSurveyWeb.SurveyLive.ShowComponent do
     <h1>Survey results</h1>
     <h2><%= @survey.title %></h2>
       <div id="charting">
-        <canvas id="chart-canvas"
-                phx-hook="BarChart"
-                data-chart-data="<%= Jason.encode!(@chart_data) %>">
-        </canvas>
+        <div phx-update="ignore">
+          <canvas id="chart-canvas"
+                  phx-hook="BarChart"
+                  data-chart-data="<%= Jason.encode!(@chart_data) %>">
+          </canvas>
+        </div>
       </div>
     """
   end
