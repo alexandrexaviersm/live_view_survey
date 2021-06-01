@@ -1,14 +1,45 @@
-<h2><%= @title %></h2>
+<div id="create-survey">
+  <div class="main">
+    <div class="wrapper">
+      <h2><%= @title %></h2>
+      <%= f = form_for @changeset, "#",
+                  phx_submit: "save",
+                  phx_change: "validate",
+                  phx_target: @myself %>
+        <div class="field">
+          <%= label f , :title %>
+          <%= text_input f, :title,
+                            autocomplete: "off",
+                            phx_debounce: "blur" %>
+          <%= error_tag f, :title %>
+        </div>
 
-<%= f = form_for @changeset, "#",
-  id: "survey-form",
-  phx_target: @myself,
-  phx_change: "validate",
-  phx_submit: "save" %>
+        <%= inputs_for f, :options, fn fp -> %>
+          <%= hidden_input(fp, :id) %>
+          <div class="field">
+            <%= label fp, :option, "Option" %>
+            <div class="grid grid-cols-10">
+              <%= text_input fp, :option,
+                                  autocomplete: "off",
+                                  phx_debounce: "blur",
+                                  class: "col-span-7" %>
+              <%= error_tag fp, :option %>
+              <div></div>
+              <%= if length(@changeset.changes.options) > 1 do %>
+                <span class="btn-secondary cursor-pointer col-span-2 text-lg" phx-click="remove-option" phx-value-id="<%= fp.source.changes.id %>" phx-target="<%= @myself %>">Remove</span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
 
-  <%= label f, :title %>
-  <%= text_input f, :title %>
-  <%= error_tag f, :title %>
-
-  <%= submit "Save", phx_disable_with: "Saving..." %>
-</form>
+        <div class="py-5">
+          <span class="btn cursor-pointer" phx-click="add-option" phx-target="<%= @myself %>">Add option</span>
+        </div>
+        <div class="text-center pt-3">
+          <%= submit "Save", phx_disable_with: "Saving..." %>
+          <%= live_patch "Cancel", to: @return_to, class: "cancel" %>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
