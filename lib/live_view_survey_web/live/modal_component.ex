@@ -11,7 +11,7 @@ defmodule LiveViewSurveyWeb.ModalComponent do
       phx-target="#<%= @id %>"
       phx-page-loading>
 
-      <div class="phx-modal-content">
+      <div class="phx-modal-content <%= @opts[:modal_content] %>">
         <%= live_patch raw("&times;"), to: @return_to, class: "phx-modal-close" %>
         <%= live_component @socket, @component, @opts %>
       </div>
