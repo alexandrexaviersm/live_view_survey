@@ -22,6 +22,7 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
   describe "Index" do
     setup [:create_survey]
 
+    @tag skip: true
     test "lists all surveys", %{conn: conn, survey: survey} do
       {:ok, _index_live, html} = live(conn, Routes.survey_index_path(conn, :index))
 
@@ -29,6 +30,7 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
       assert html =~ survey.title
     end
 
+    @tag skip: true
     test "saves new survey", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, Routes.survey_index_path(conn, :index))
 
@@ -51,6 +53,7 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
       assert html =~ "some title"
     end
 
+    @tag skip: true
     test "updates survey in listing", %{conn: conn, survey: survey} do
       {:ok, index_live, _html} = live(conn, Routes.survey_index_path(conn, :index))
 
@@ -73,6 +76,7 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
       assert html =~ "some updated title"
     end
 
+    @tag skip: true
     test "deletes survey in listing", %{conn: conn, survey: survey} do
       {:ok, index_live, _html} = live(conn, Routes.survey_index_path(conn, :index))
 
@@ -84,6 +88,7 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
   describe "Show" do
     setup [:create_survey]
 
+    @tag skip: true
     test "displays survey", %{conn: conn, survey: survey} do
       {:ok, _show_live, html} = live(conn, Routes.survey_show_path(conn, :show, survey))
 
@@ -91,6 +96,7 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
       assert html =~ survey.title
     end
 
+    @tag skip: true
     test "updates survey within modal", %{conn: conn, survey: survey} do
       {:ok, show_live, _html} = live(conn, Routes.survey_show_path(conn, :show, survey))
 

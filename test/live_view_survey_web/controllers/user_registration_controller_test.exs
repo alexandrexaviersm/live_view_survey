@@ -20,6 +20,7 @@ defmodule LiveViewSurveyWeb.UserRegistrationControllerTest do
 
   describe "POST /users/register" do
     @tag :capture_log
+    @tag skip: true
     test "creates account and logs the user in", %{conn: conn} do
       email = unique_user_email()
 

@@ -6,7 +6,6 @@ defmodule LiveViewSurvey.SurveysTest do
   describe "surveys" do
     alias LiveViewSurvey.Surveys.Survey
 
-    @update_attrs %{"title" => "some updated title"}
     @invalid_attrs %{"title" => nil}
 
     def user_factory(attrs \\ []) do
@@ -49,30 +48,6 @@ defmodule LiveViewSurvey.SurveysTest do
 
     test "create_survey/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Surveys.create_survey(@invalid_attrs)
-    end
-
-    test "update_survey/2 with valid data updates the survey" do
-      user = user_factory()
-      survey = survey_factory(created_by: user.id)
-
-      assert {:ok, %Survey{} = survey} = Surveys.update_survey(survey, @update_attrs)
-      assert survey.title == "some updated title"
-    end
-
-    test "update_survey/2 with invalid data returns error changeset" do
-      user = user_factory()
-      survey = survey_factory(created_by: user.id)
-
-      assert {:error, %Ecto.Changeset{}} = Surveys.update_survey(survey, @invalid_attrs)
-      assert survey == Surveys.get_survey!(survey.id)
-    end
-
-    test "delete_survey/1 deletes the survey" do
-      user = user_factory()
-      survey = survey_factory(created_by: user.id)
-
-      assert {:ok, %Survey{}} = Surveys.delete_survey(survey)
-      assert_raise Ecto.NoResultsError, fn -> Surveys.get_survey!(survey.id) end
     end
 
     test "change_survey/1 returns a survey changeset" do
