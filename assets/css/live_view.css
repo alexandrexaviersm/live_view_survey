@@ -43,6 +43,10 @@
   width: 80%;
 }
 
+.phx-modal-content-chart {
+  margin: 2% auto;
+}
+
 .phx-modal-close {
   color: #aaa;
   float: right;
