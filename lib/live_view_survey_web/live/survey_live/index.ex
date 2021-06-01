@@ -34,14 +34,6 @@ defmodule LiveViewSurveyWeb.SurveyLive.Index do
     |> assign(:survey, nil)
   end
 
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    survey = Surveys.get_survey!(id)
-    {:ok, _} = Surveys.delete_survey(survey)
-
-    {:noreply, assign(socket, :surveys, list_surveys(socket.assigns.current_user.id))}
-  end
-
   defp list_surveys(user_id) do
     Surveys.list_surveys(user_id)
   end

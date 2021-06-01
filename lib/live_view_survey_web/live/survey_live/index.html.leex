@@ -1,8 +1,8 @@
-<h1>Listing Surveys</h1>
+<h1>Surveys</h1>
 
-<%= if @live_action in [:new, :edit] do %>
+<%= if @live_action == :new do %>
   <%= live_modal @socket, LiveViewSurveyWeb.SurveyLive.FormComponent,
-    id: @survey.id || :new,
+    id: :new,
     current_user: @current_user,
     title: @page_title,
     action: @live_action,
@@ -10,28 +10,28 @@
     return_to: Routes.survey_index_path(@socket, :index) %>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
+<%= if @live_action == :show do %>
+  <%= live_modal @socket, LiveViewSurveyWeb.SurveyLive.ShowComponent,
+    id: @survey.id || :new,
+    current_user: @current_user,
+    title: @page_title,
+    action: @live_action,
+    survey: @survey,
+    return_to: Routes.survey_index_path(@socket, :index),
+    modal_content: "phx-modal-content-chart" %>
+<% end %>
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="surveys">
-    <%= for survey <- @surveys do %>
-      <tr id="survey-<%= survey.id %>">
-        <td><%= survey.title %></td>
+<div id="surveys">
+  <div class="create">
+    <%= live_patch "Create Survey", to: Routes.survey_index_path(@socket, :new), class: "btn" %>
+  </div>
 
-        <td>
-          <span><%= live_redirect "Show", to: Routes.survey_show_path(@socket, :show, survey) %></span>
-          <span><%= live_patch "Edit", to: Routes.survey_index_path(@socket, :edit, survey) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: survey.id, data: [confirm: "Are you sure?"] %></span>
-          <span><%= link "Responder", to: Routes.survey_answer_path(@socket, :show, survey.id, Slug.slugify(survey.title)), target: "_blank" %></span>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<span><%= live_patch "New Survey", to: Routes.survey_index_path(@socket, :new) %></span>
+  <%= for survey <- @surveys do %>
+    <div class="survey" id="survey-<%= survey.id %>">
+      <div class="name">
+        <%= live_redirect survey.title, to: Routes.survey_index_path(@socket, :show, survey) %>
+      </div>
+        <%= link "Voting URL", class: "btn-secondary", to: Routes.survey_answer_path(@socket, :show, survey.id, Slug.slugify(survey.title)), target: "_blank" %>
+    </div>
+  <% end %>
+</div>
