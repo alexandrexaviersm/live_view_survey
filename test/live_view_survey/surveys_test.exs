@@ -2,7 +2,7 @@ defmodule LiveViewSurvey.SurveysTest do
   use LiveViewSurvey.DataCase, async: true
 
   alias LiveViewSurvey.Surveys
-  alias LiveViewSurvey.Surveys.{Survey, SessionSurvey}
+  alias LiveViewSurvey.Surveys.{SessionSurvey, Survey}
 
   describe "surveys" do
     defp create_user_factory(attrs \\ []) do

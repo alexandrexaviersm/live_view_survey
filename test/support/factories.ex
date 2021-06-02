@@ -5,8 +5,7 @@ defmodule LiveViewSurvey.Factories do
 
   alias Ecto.UUID
   alias LiveViewSurvey.Accounts.{User, UserToken}
-  alias LiveViewSurvey.Surveys.Survey
-  alias LiveViewSurvey.Surveys.SessionSurvey
+  alias LiveViewSurvey.Surveys.{SessionSurvey, Survey}
 
   def survey(attrs \\ []) do
     attrs =
