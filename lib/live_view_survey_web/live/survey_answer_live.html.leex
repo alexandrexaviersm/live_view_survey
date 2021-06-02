@@ -2,7 +2,7 @@
 <h2><%= @survey.title %></h2>
   <%= if @session_already_voted? do %>
     <div id="charting">
-      <div phx-update="ignore">
+      <div id="ignore" phx-update="ignore">
         <canvas id="chart-canvas"
                 phx-hook="BarChart"
                 data-chart-data="<%= Jason.encode!(@chart_data) %>">
@@ -12,7 +12,7 @@
   <% else %>
     <div id="take-survey">
       <div id="options">
-        <%= f = form_for @changeset, "#", phx_submit: "save" %>
+        <%= f = form_for @changeset, "#", id: "vote",phx_submit: "save" %>
           <%= inputs_for f, :options, fn fp -> %>
             <div class="option" id="<%= fp.data.id %>">
               <div class="flex items-center mr-4 mb-4">

@@ -20,6 +20,7 @@ defmodule LiveViewSurveyWeb.ConnCase do
 
   using do
     quote do
+      alias LiveViewSurvey.{Factories, Repo}
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest

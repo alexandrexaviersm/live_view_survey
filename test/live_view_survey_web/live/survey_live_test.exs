@@ -5,118 +5,203 @@ defmodule LiveViewSurveyWeb.SurveyLiveTest do
 
   alias LiveViewSurvey.Surveys
 
-  @create_attrs %{title: "some title"}
-  @update_attrs %{title: "some updated title"}
-  @invalid_attrs %{title: nil}
+  defp setup_user(_context) do
+    user =
+      Factories.user()
+      |> Repo.insert!()
 
-  defp fixture(:survey) do
-    {:ok, survey} = Surveys.create_survey(@create_attrs)
+    [user: user]
+  end
+
+  defp setup_user_login(context) do
+    [conn: log_in_user(context.conn, context.user)]
+  end
+
+  defp setup_live_view(context) do
+    {:ok, live_view, html} = live(context.conn, "/surveys")
+
+    [lv: live_view, html: html]
+  end
+
+  defp create_survey(attrs) do
+    {:ok, survey} =
+      attrs
+      |> Enum.into(%{"options" => [%{id: Ecto.UUID.generate(), option: "Option 01"}]})
+      |> Surveys.create_survey()
+
     survey
   end
 
-  defp create_survey(_) do
-    survey = fixture(:survey)
-    %{survey: survey}
+  test "redirects to login page if user is not logged in", %{conn: conn} do
+    {:error, {:redirect, %{to: "/users/log_in"}}} = live(conn, "/surveys")
   end
 
   describe "Index" do
-    setup [:create_survey]
+    setup [:setup_user, :setup_user_login, :setup_live_view]
 
-    @tag skip: true
-    test "lists all surveys", %{conn: conn, survey: survey} do
-      {:ok, _index_live, html} = live(conn, Routes.survey_index_path(conn, :index))
-
-      assert html =~ "Listing Surveys"
-      assert html =~ survey.title
+    test "renders restricted page if user is logged in", %{lv: lv} do
+      assert render(lv) =~ "Surveys"
     end
 
-    @tag skip: true
-    test "saves new survey", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.survey_index_path(conn, :index))
+    test "lists all surveys and button create", %{lv: lv, html: html, user: user} do
+      survey_1 = create_survey([{"title", "Test Survey 01"}, {"current_user", user}])
+      survey_2 = create_survey([{"title", "Test Survey 02"}, {"current_user", user}])
 
-      assert index_live |> element("a", "New Survey") |> render_click() =~
-               "New Survey"
+      assert html =~ "Surveys"
+      assert render(lv) =~ "Surveys"
 
-      assert_patch(index_live, Routes.survey_index_path(conn, :new))
+      assert has_element?(lv, "#surveys a", "Create Survey")
 
-      assert index_live
-             |> form("#survey-form", survey: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _, html} =
-        index_live
-        |> form("#survey-form", survey: @create_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.survey_index_path(conn, :index))
-
-      assert html =~ "Survey created successfully"
-      assert html =~ "some title"
+      assert has_element?(lv, "#survey-#{survey_1.id} a", survey_1.title)
+      assert has_element?(lv, "#survey-#{survey_1.id} a", "Voting URL")
+      assert has_element?(lv, "#survey-#{survey_2.id}", survey_2.title)
+      assert has_element?(lv, "#survey-#{survey_2.id} a", "Voting URL")
     end
 
-    @tag skip: true
-    test "updates survey in listing", %{conn: conn, survey: survey} do
-      {:ok, index_live, _html} = live(conn, Routes.survey_index_path(conn, :index))
+    test "clicking create survey button patches new route", %{lv: lv} do
+      lv
+      |> element("#surveys a", "Create Survey")
+      |> render_click()
 
-      assert index_live |> element("#survey-#{survey.id} a", "Edit") |> render_click() =~
-               "Edit Survey"
-
-      assert_patch(index_live, Routes.survey_index_path(conn, :edit, survey))
-
-      assert index_live
-             |> form("#survey-form", survey: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _, html} =
-        index_live
-        |> form("#survey-form", survey: @update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.survey_index_path(conn, :index))
-
-      assert html =~ "Survey updated successfully"
-      assert html =~ "some updated title"
+      assert_patched(lv, "/surveys/new")
     end
 
-    @tag skip: true
-    test "deletes survey in listing", %{conn: conn, survey: survey} do
-      {:ok, index_live, _html} = live(conn, Routes.survey_index_path(conn, :index))
+    test "clicking survey title link redirects to show route", %{lv: lv, user: user} do
+      survey = create_survey([{"title", "Test Survey 01"}, {"current_user", user}])
 
-      assert index_live |> element("#survey-#{survey.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#survey-#{survey.id}")
+      lv
+      |> element("#survey-#{survey.id} a", survey.title)
+      |> render_click()
+
+      assert_redirected(lv, "/surveys/#{survey.id}/show")
+    end
+
+    test "clicking survey votting url link redirects to votting route", %{lv: lv, user: user} do
+      survey = create_survey([{"title", "Test Survey 01"}, {"current_user", user}])
+
+      lv
+      |> element("#survey-#{survey.id} a", "Voting URL")
+      |> render_click()
+
+      assert_redirected(lv, "/survey_answer/#{survey.id}/#{Slug.slugify(survey.title)}")
+    end
+
+    test "receives real-time updates", %{lv: lv, user: user} do
+      survey = create_survey([{"title", "Test Survey 01"}, {"current_user", user}])
+
+      assert has_element?(lv, "#survey-#{survey.id} a", survey.title)
     end
   end
 
   describe "Show" do
-    setup [:create_survey]
+    setup [:setup_user, :setup_user_login]
 
-    @tag skip: true
-    test "displays survey", %{conn: conn, survey: survey} do
-      {:ok, _show_live, html} = live(conn, Routes.survey_show_path(conn, :show, survey))
+    test "displays survey and the chart", %{conn: conn, user: user} do
+      survey = create_survey([{"title", "Test Survey 01"}, {"current_user", user}])
 
-      assert html =~ "Show Survey"
-      assert html =~ survey.title
+      {:ok, lv, _html} = live(conn, Routes.survey_index_path(conn, :show, survey))
+
+      assert has_element?(lv, "h1", "Survey results")
+      assert has_element?(lv, "h2", survey.title)
+
+      assert has_element?(lv, "#charting canvas[id=chart-canvas][phx-hook=BarChart]", "")
+    end
+  end
+
+  describe "Form" do
+    setup [:setup_user, :setup_user_login]
+
+    test "displays the form to create a new survey", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, Routes.survey_index_path(conn, :new))
+
+      assert has_element?(lv, "h2", "New Survey")
+      assert has_element?(lv, "form", "")
+      assert has_element?(lv, "#form-create label", "Title")
+      assert has_element?(lv, "#form-create input[id=form-create_title]", "")
+      assert has_element?(lv, "#form-create label", "Option")
+
+      assert has_element?(
+               lv,
+               "#form-create input[id=form-create_options_0_option][value='Option 01']",
+               ""
+             )
+
+      assert has_element?(lv, "#form-create span", "Add option")
+      assert has_element?(lv, "#form-create button", "Save")
+      assert has_element?(lv, "#form-create a", "Cancel")
     end
 
-    @tag skip: true
-    test "updates survey within modal", %{conn: conn, survey: survey} do
-      {:ok, show_live, _html} = live(conn, Routes.survey_show_path(conn, :show, survey))
-
-      assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Survey"
-
-      assert_patch(show_live, Routes.survey_show_path(conn, :edit, survey))
-
-      assert show_live
-             |> form("#survey-form", survey: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+    test "saves new survey", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, Routes.survey_index_path(conn, :new))
 
       {:ok, _, html} =
-        show_live
-        |> form("#survey-form", survey: @update_attrs)
+        lv
+        |> form("#form-create", %{survey: %{title: "New Survey 01"}})
         |> render_submit()
-        |> follow_redirect(conn, Routes.survey_show_path(conn, :show, survey))
+        |> follow_redirect(conn, Routes.survey_index_path(conn, :index))
 
-      assert html =~ "Survey updated successfully"
-      assert html =~ "some updated title"
+      assert html =~ "Survey created successfully"
+      assert html =~ "New Survey 01"
+    end
+
+    test "displays live validations", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, Routes.survey_index_path(conn, :new))
+
+      lv
+      |> form("#form-create", %{survey: %{title: ""}})
+      |> render_change()
+
+      assert has_element?(lv, "#form-create", "can't be blank")
+    end
+
+    test "clicking add option link add a new form input", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, Routes.survey_index_path(conn, :new))
+
+      assert has_element?(lv, "#form-create label[for=form-create_options_0_option]", "Option")
+
+      assert has_element?(
+               lv,
+               "#form-create input[id=form-create_options_0_option][value='Option 01']",
+               ""
+             )
+
+      refute has_element?(lv, "#form-create label[for=form-create_options_1_option]", "Option")
+
+      refute has_element?(
+               lv,
+               "#form-create input[id=form-create_options_0_option][value='New option']",
+               ""
+             )
+
+      lv
+      |> element("#form-create span", "Add option")
+      |> render_click()
+
+      assert has_element?(lv, "#form-create label[for=form-create_options_1_option]", "Option")
+
+      assert has_element?(
+               lv,
+               "#form-create input[id=form-create_options_1_option][value='Option 01']",
+               ""
+             )
+
+      assert has_element?(lv, "#form-create label[for=form-create_options_0_option]", "Option")
+
+      assert has_element?(
+               lv,
+               "#form-create input[id=form-create_options_0_option][value='New option']",
+               ""
+             )
+    end
+
+    test "clicking cancel button patches back to index", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, Routes.survey_index_path(conn, :new))
+
+      lv
+      |> element("#form-create a", "Cancel")
+      |> render_click()
+
+      assert_patched(lv, "/surveys")
     end
   end
 end

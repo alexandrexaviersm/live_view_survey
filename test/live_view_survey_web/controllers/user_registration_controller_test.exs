@@ -20,7 +20,6 @@ defmodule LiveViewSurveyWeb.UserRegistrationControllerTest do
 
   describe "POST /users/register" do
     @tag :capture_log
-    @tag skip: true
     test "creates account and logs the user in", %{conn: conn} do
       email = unique_user_email()
 
@@ -33,7 +32,7 @@ defmodule LiveViewSurveyWeb.UserRegistrationControllerTest do
       assert redirected_to(conn) =~ "/"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, "/")
+      conn = get(conn, "/surveys")
       response = html_response(conn, 200)
       assert response =~ email
       assert response =~ "Settings</a>"

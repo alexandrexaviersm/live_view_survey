@@ -3,6 +3,7 @@
     <div class="wrapper">
       <h2><%= @title %></h2>
       <%= f = form_for @changeset, "#",
+                  id: "form-create",
                   phx_submit: "save",
                   phx_change: "validate",
                   phx_target: @myself %>

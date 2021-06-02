@@ -23,7 +23,6 @@ defmodule LiveViewSurveyWeb.UserSessionControllerTest do
   end
 
   describe "POST /users/log_in" do
-    @tag skip: true
     test "logs the user in", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.user_session_path(conn, :create), %{
@@ -34,7 +33,7 @@ defmodule LiveViewSurveyWeb.UserSessionControllerTest do
       assert redirected_to(conn) =~ "/"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, "/")
+      conn = get(conn, "/surveys")
       response = html_response(conn, 200)
       assert response =~ user.email
       assert response =~ "Settings</a>"

@@ -1,5 +1,5 @@
 defmodule LiveViewSurvey.AccountsTest do
-  use LiveViewSurvey.DataCase
+  use LiveViewSurvey.DataCase, async: true
 
   alias LiveViewSurvey.Accounts
   import LiveViewSurvey.AccountsFixtures

@@ -37,7 +37,7 @@ defmodule LiveViewSurveyWeb.SurveyLive.ShowComponent do
     <h1>Survey results</h1>
     <h2><%= @survey.title %></h2>
       <div id="charting">
-        <div phx-update="ignore">
+        <div id="ignore" phx-update="ignore">
           <canvas id="chart-canvas"
                   phx-hook="BarChart"
                   data-chart-data="<%= Jason.encode!(@chart_data) %>">
