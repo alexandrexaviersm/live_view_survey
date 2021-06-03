@@ -1,11 +1,10 @@
 use Mix.Config
 
+database_url = System.get_env("DATABASE_URL")
+
 # Configure your database
 config :live_view_survey, LiveViewSurvey.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "live_view_survey_dev",
-  hostname: "localhost",
+  url: database_url,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
